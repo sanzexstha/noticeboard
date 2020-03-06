@@ -2,10 +2,13 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+/media
+media/
+media
+/media/
 # C extensions
 *.so
-
+.vscode
 # Distribution / packaging
 .Python
 build/
