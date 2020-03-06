@@ -5,6 +5,7 @@ from rest_framework.reverse import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from .models import *
+from .serializers import *
  
 class TestCalls(TestCase):
      
@@ -19,10 +20,10 @@ class TestCalls(TestCase):
         self.client = APIClient()
         self.client.login(username='jacob', password='top_secret')
         
-    def test_post(self):
-    
+    def test_post(self):         
         with open('/home/sanjeev1/Desktop/test.jpg', 'rb') as image:
-            response = self.client.post(reverse('post_list'), data= {  'image': image}, format='multipart')
+            
+            response = self.client.post(reverse('post_list'), data= { 'image': image}, format='multipart')
             import ipdb
             ipdb.set_trace()
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)   
