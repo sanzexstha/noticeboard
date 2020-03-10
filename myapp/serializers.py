@@ -36,7 +36,7 @@ class UserSerializer(serializers.Serializer):
         password = validated_data.pop('password')
         user = User.objects.create_user(**validated_data)
         user.set_password(password)
-        return User
+        return user
 
     def update(self, instance, validated_data):
         instane.username =validated_data.get('username', instance.username)
@@ -47,13 +47,17 @@ class UserSerializer(serializers.Serializer):
 
 
 class CommentSerializer(serializers.Serializer):
-    commented_by = UserSerializer(read_only=True)
+
     comment = serializers.CharField()
     post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
  
  
     def create(self, validated_data):
         return Comment.objects.create(**validated_data)
+
+    def update(self, validated_data):
+        instance.comment=validated_data.get('comment', instance.comment)
+        return instance
 
 class CommentListSerializer(serializers.Serializer):
     commented_by = UserSerializer(read_only=True)
@@ -64,11 +68,23 @@ class CommentListSerializer(serializers.Serializer):
     def create(self, validated_data):
         raise NotImplementedError
  
+
+class PostLikeSerializer(serializers.Serializer):
+    post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
+    liked = serializers.BooleanField(default=True)
+
+    def create(self, validated_data):
+        return PostLike.objects.create(**validated_data)
+
+
 class PostSerializer(serializers.Serializer):
-    posted_by = UserSerializer(read_only=True)
+    posted_by= serializers.ReadOnlyField(source='posted_by.username')
+
     text = serializers.CharField()
+    posted_date = serializers.DateTimeField()
 
     image = serializers.ImageField()
+    # post_likes = PostLikeSerializer(many=True, read_only=True)
     comments = CommentListSerializer(read_only=True, source='comment', many=True)
 
 
@@ -82,7 +98,14 @@ class PostSerializer(serializers.Serializer):
         return instance
         
         
- 
+
+
+
+
+
+
+
+
 
 # class PostSerializer(serializers.Serializer):
     

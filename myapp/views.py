@@ -2,7 +2,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import *
-from .serializers import PostSerializer, UserSerializer, CommentSerializer, CommentListSerializer
+from .serializers import (PostSerializer, UserSerializer, CommentSerializer, 
+                        CommentListSerializer, PostLikeSerializer)
 from rest_framework import viewsets
 
 
@@ -44,8 +45,8 @@ def comment_list_post(request):
    
 
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    # def perform_create(self, serializer):
+    #     serializer.save(user=self.request.user)
 
 
 
@@ -74,6 +75,21 @@ def post_detail(request, pk):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(['GET', 'POST'])
+def like_list_post(request):
+    
+    if request.method == 'GET':
+        posts = PostLike.objects.all()
+        serializer = PostLikeSerializer(posts, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST' and request.user :
+        serializer = PostLikeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+             
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def user_create(request):
@@ -84,12 +100,12 @@ def user_create(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# class PostModelViewSet(viewsets.ModelViewSet):
-#     queryset= Post.objects.all()
-#     serializer_class = PostSerializer
+class PostLikeModelViewSet(viewsets.ModelViewSet):
+    queryset= PostLike.objects.all()
+    serializer_class = PostLikeSerializer
 
-#     def perform_create(self, serializer):
-#         serializer.save(user=self.request.user)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 # class CommentViewSet(viewsets.ModelViewSet):
 #     queryset= Comment.objects.all()
