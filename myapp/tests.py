@@ -19,11 +19,16 @@ class TestCalls(TestCase):
      
         self.client = APIClient()
         self.client.login(username='jacob', password='top_secret')
-        
+
+    def test_list(self):
+        response = self.client.get(reverse('post_list'))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)   
+
     def test_post(self):         
         with open('/home/sanjeev1/Desktop/test.jpg', 'rb') as image:
             
             response = self.client.post(reverse('post_list'), data= { 'image': image}, format='multipart')
             import ipdb
-            ipdb.set_trace()
+            ipdb.set_trace()           
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)   
