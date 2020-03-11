@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 
  
 class Post(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posted_by')
+    
+    posted_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_posts')
     image = models.ImageField(upload_to='documents/', null=True, blank=True)
     text = models.TextField(null=False)
     posted_date = models.DateTimeField(auto_now_add=True)
@@ -15,10 +16,12 @@ class Post(models.Model):
         comments = Comment.objects.filter(post_id=self.id)
         return comments
 
+# class PostImage(models.Model):
+#     post = models.ForeignKey(Post, related_name='post_likes', on_delete=models.CASCADE)
 
 class PostLike(models.Model):
     post= models.ForeignKey(Post, related_name='post_likes', on_delete=models.CASCADE)
-    liked_by = models.ForeignKey(User, related_name='user_like', on_delete=models.CASCADE)
+    liked_by = models.ForeignKey(User, related_name='user_likes', on_delete=models.CASCADE)
     liked = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

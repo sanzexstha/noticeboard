@@ -105,8 +105,19 @@ class PostLikeModelViewSet(viewsets.ModelViewSet):
     serializer_class = PostLikeSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(liked_by=self.request.user)
 
-# class CommentViewSet(viewsets.ModelViewSet):
-#     queryset= Comment.objects.all()
-#     serializer_class = CommentSerializer
+class PostModelViewSet(viewsets.ModelViewSet):
+    queryset= Post.objects.all()
+    serializer_class = PostSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(posted_by=self.request.user)
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset= Comment.objects.all()
+    serializer_class = CommentSerializer
+
+
+    def perform_create(self, serializer):
+        serializer.save(commented_by=self.request.user)

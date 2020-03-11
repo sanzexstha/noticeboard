@@ -6,8 +6,8 @@ from rest_framework import routers
  
 
 router = routers.DefaultRouter()
-# router.register('posts', PostModelViewSet)
-# router.register('comments', CommentViewSet)
+router.register('posts', PostModelViewSet)
+router.register('comments', CommentViewSet)
 router.register('likes', PostLikeModelViewSet)
 urlpatterns = [
     path('', include(router.urls)),

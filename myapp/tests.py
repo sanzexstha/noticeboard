@@ -7,7 +7,7 @@ from rest_framework.test import APIClient
 from .models import *
 from .serializers import *
  
-class TestCalls(TestCase):
+class TestPost(TestCase):
      
               
     def setUp(self):
@@ -32,3 +32,6 @@ class TestCalls(TestCase):
             import ipdb
             ipdb.set_trace()           
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)   
+
+    def test_put(self):
+        

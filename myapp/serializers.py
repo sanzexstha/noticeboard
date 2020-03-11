@@ -1,31 +1,12 @@
 from .models import *
 from rest_framework import serializers
-
-
-
-
-# class UserSerializer(serializers.ModelSerializer):
-
-    
-
- 
-
-#     def to_internal_value(self, data):
-#         user_data = data['user']
-#         return super().to_internal_value(user_data)
-
-#     class Meta:
-#         model = User
-#         fields = ('username', 'email', 'first_name', 'last_name', 'password')
-#         extra_kwargs = {
-#             'password': {'write_only': True}
-#         }
  
 class UserSerializer(serializers.Serializer):
 
-    def to_internal_value(self, data):
-        user_data = data('posted_by')
-        return super().to_internal_value(user_data)
+    # def to_internal_value(self, data):
+    #     user_data = data('posted_by')
+    #     return super().to_internal_value(user_data)
+    id = serializers.ReadOnlyField()
 
     username= serializers.CharField(max_length=100)
     password= serializers.CharField(max_length=100, write_only=True)
@@ -47,7 +28,7 @@ class UserSerializer(serializers.Serializer):
 
 
 class CommentSerializer(serializers.Serializer):
-
+    id = serializers.ReadOnlyField()
     comment = serializers.CharField()
     post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
  
@@ -60,6 +41,7 @@ class CommentSerializer(serializers.Serializer):
         return instance
 
 class CommentListSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
     commented_by = UserSerializer(read_only=True)
     comment = serializers.CharField()
     created = serializers.DateTimeField()
@@ -70,42 +52,38 @@ class CommentListSerializer(serializers.Serializer):
  
 
 class PostLikeSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
+
+    liked_by = UserSerializer(read_only=True)
     post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
-    liked = serializers.BooleanField(default=True)
+ 
 
     def create(self, validated_data):
         return PostLike.objects.create(**validated_data)
 
 
-class PostSerializer(serializers.Serializer):
-    posted_by= serializers.ReadOnlyField(source='posted_by.username')
+class PostLikeListSerializer(serializers.Serializer):
+    liked_by = UserSerializer(read_only=True)
 
+class PostSerializer(serializers.Serializer):
+
+    id = serializers.ReadOnlyField()
+    posted_by= UserSerializer(read_only=True)
     text = serializers.CharField()
-    posted_date = serializers.DateTimeField()
+    # posted_date = serializers.DateTimeField()
 
     image = serializers.ImageField()
-    # post_likes = PostLikeSerializer(many=True, read_only=True)
+    post_likes = PostLikeListSerializer(many=True, read_only=True)
     comments = CommentListSerializer(read_only=True, source='comment', many=True)
 
 
     def create(self, validated_data): 
-        print(validated_data)
         return Post.objects.create(**validated_data)
 
     def update(self, validated_data):
         instance.text = validated_data.get('text', instance.text)
         instance.image = validated_data.get('image', instance.image)
         return instance
-        
-        
-
-
-
-
-
-
-
-
 
 # class PostSerializer(serializers.Serializer):
     
