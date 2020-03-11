@@ -53,50 +53,53 @@ class CommentListSerializer(serializers.Serializer):
 
 class PostLikeSerializer(serializers.Serializer):
     id = serializers.ReadOnlyField()
-
     liked_by = UserSerializer(read_only=True)
     post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
  
 
     def create(self, validated_data):
         return PostLike.objects.create(**validated_data)
+ 
 
 
 class PostLikeListSerializer(serializers.Serializer):
     liked_by = UserSerializer(read_only=True)
 
-class PostSerializer(serializers.Serializer):
+class PostImageSerializer(serializers.Serializer):
 
+    def to_internal_value(self, data):
+        images = data['images']
+        return super().to_internal_value(images)
+
+
+
+    image= serializers.ImageField()
+
+    
+    
+   
+ 
+
+class PostSerializer(serializers.Serializer):
+     
+        
     id = serializers.ReadOnlyField()
     posted_by= UserSerializer(read_only=True)
-    text = serializers.CharField()
-    # posted_date = serializers.DateTimeField()
-
-    image = serializers.ImageField()
+    text = serializers.CharField(required=False)  
+    image=serializers.ImageField()
+    posted_date = serializers.DateTimeField(read_only=True)
     post_likes = PostLikeListSerializer(many=True, read_only=True)
     comments = CommentListSerializer(read_only=True, source='comment', many=True)
 
 
     def create(self, validated_data): 
         return Post.objects.create(**validated_data)
-
+        
+ 
+     
     def update(self, validated_data):
         instance.text = validated_data.get('text', instance.text)
         instance.image = validated_data.get('image', instance.image)
         return instance
 
-# class PostSerializer(serializers.Serializer):
-    
-#     image = serializers.ImageField()
-
-#     def create(self, validated_data):
-#         user_data = validated_data.pop('user')
-#         user = User.objects.get(username=user_data.username)
-
-#         return Post.objects.create(user=user, **validated_data)
-
-#     def update(self, instance, validated_data):
-#         instance.image=validated_data.get('image', instance.image)
-#         return instance
-
-
+ 

@@ -16,8 +16,7 @@ class Post(models.Model):
         comments = Comment.objects.filter(post_id=self.id)
         return comments
 
-# class PostImage(models.Model):
-#     post = models.ForeignKey(Post, related_name='post_likes', on_delete=models.CASCADE)
+ 
 
 class PostLike(models.Model):
     post= models.ForeignKey(Post, related_name='post_likes', on_delete=models.CASCADE)

@@ -26,12 +26,13 @@ class TestPost(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)   
 
     def test_post(self):         
-        with open('/home/sanjeev1/Desktop/test.jpg', 'rb') as image:
+        with open('/home/sanjeev1/Desktop/test1.jpg', 'rb') as image:
             
             response = self.client.post(reverse('post_list'), data= { 'image': image}, format='multipart')
-            import ipdb
-            ipdb.set_trace()           
+              
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)   
 
     def test_put(self):
+        
+
         
