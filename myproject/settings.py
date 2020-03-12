@@ -41,7 +41,11 @@ INSTALLED_APPS = [
     'myapp',
  ]
 REST_FRAMEWORK = {
+    # 'DEFAULT_PERMISSION_CLASSES': [ 
+    #     'rest_framework.permissions.IsAdminUser',
+    # ],
     'DEFAULT_RENDERER_CLASSES': [
+        
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ]
@@ -112,7 +116,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE ='Asia/Kathmandu'
+
 
 USE_I18N = True
 

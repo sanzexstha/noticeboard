@@ -1,14 +1,14 @@
 from .models import *
 from rest_framework import serializers
+from django.contrib.auth.validators import UnicodeUsernameValidator
  
 class UserSerializer(serializers.Serializer):
 
-    # def to_internal_value(self, data):
-    #     user_data = data('posted_by')
-    #     return super().to_internal_value(user_data)
+   
     id = serializers.ReadOnlyField()
 
-    username= serializers.CharField(max_length=100)
+    username= serializers.CharField(max_length=100, validators=[
+        UnicodeUsernameValidator() ])
     password= serializers.CharField(max_length=100, write_only=True)
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100)
@@ -36,7 +36,7 @@ class CommentSerializer(serializers.Serializer):
     def create(self, validated_data):
         return Comment.objects.create(**validated_data)
 
-    def update(self, validated_data):
+    def update(self, instance, validated_data):
         instance.comment=validated_data.get('comment', instance.comment)
         return instance
 
@@ -65,15 +65,15 @@ class PostLikeSerializer(serializers.Serializer):
 class PostLikeListSerializer(serializers.Serializer):
     liked_by = UserSerializer(read_only=True)
 
-class PostImageSerializer(serializers.Serializer):
+# class PostImageSerializer(serializers.Serializer):
 
-    def to_internal_value(self, data):
-        images = data['images']
-        return super().to_internal_value(images)
+#     # def to_internal_value(self, data):
+#     #     images = data['images']
+#     #     return super().to_internal_value(images)
 
 
 
-    image= serializers.ImageField()
+#     image= serializers.ImageField()
 
     
     
@@ -86,18 +86,21 @@ class PostSerializer(serializers.Serializer):
     id = serializers.ReadOnlyField()
     posted_by= UserSerializer(read_only=True)
     text = serializers.CharField(required=False)  
-    image=serializers.ImageField()
+    image=serializers.ImageField(required=False)
     posted_date = serializers.DateTimeField(read_only=True)
     post_likes = PostLikeListSerializer(many=True, read_only=True)
     comments = CommentListSerializer(read_only=True, source='comment', many=True)
 
-
     def create(self, validated_data): 
-        return Post.objects.create(**validated_data)
-        
- 
+        print(validated_data)
+        if  not (validated_data.get('text') and validated_data.get('image')):
+            raise serializers.ValidationError('Post is empty')
+        else:
+            return Post.objects.create(**validated_data)
+            
      
-    def update(self, validated_data):
+    def update(self, instance, validated_data):
+  
         instance.text = validated_data.get('text', instance.text)
         instance.image = validated_data.get('image', instance.image)
         return instance
