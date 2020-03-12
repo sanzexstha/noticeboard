@@ -17,7 +17,7 @@ class TestPost(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             username='jacob', email='jacob@gmail.com', password='top_secret')
-        self.post = Post.objects.create(posted_by=self.user, text='tes',image=ImageFile(open("/home/sanjeev1/git/noticeboard/media/documents/test.jpg", "rb")) )  
+        self.post = Post.objects.create(posted_by=self.user, text='tes' )  
 
         self.client = APIClient()
         self.client.login(username='jacob', password='top_secret')
