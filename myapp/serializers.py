@@ -6,7 +6,6 @@ class UserSerializer(serializers.Serializer):
 
    
     id = serializers.ReadOnlyField()
-
     username= serializers.CharField(max_length=100, validators=[
         UnicodeUsernameValidator() ])
     password= serializers.CharField(max_length=100, write_only=True)
@@ -65,16 +64,7 @@ class PostLikeSerializer(serializers.Serializer):
 class PostLikeListSerializer(serializers.Serializer):
     liked_by = UserSerializer(read_only=True)
 
-# class PostImageSerializer(serializers.Serializer):
-
-#     # def to_internal_value(self, data):
-#     #     images = data['images']
-#     #     return super().to_internal_value(images)
-
-
-
-#     image= serializers.ImageField()
-
+ 
     
     
    

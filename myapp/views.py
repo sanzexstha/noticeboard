@@ -115,7 +115,7 @@ def comment_detail(request, pk):
 
 
     elif request.method == 'DELETE':
-        if request.user and requuest.user.is_authenticated:
+        if request.user and request.user.is_authenticated:
             comment.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({'detail':'authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
