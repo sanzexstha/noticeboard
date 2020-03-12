@@ -12,7 +12,6 @@ from .serializers import (PostSerializer, UserSerializer, CommentSerializer,
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
 def post_list_post(request):
     
     if request.method == 'GET':
@@ -21,20 +20,22 @@ def post_list_post(request):
         return Response(serializer.data)
 
     
+    
     elif request.method == 'POST':
-        if request.user:
+        if request.user and request.user.is_authenticated:
             serializer = PostSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save(posted_by=request.user)
       
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'detail':'authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
  
   
 
  
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
 def post_detail(request, pk):
     """
     views for retrieve, put and delete
@@ -51,18 +52,24 @@ def post_detail(request, pk):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = PostSerializer(post, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if request.user and request.user.is_authenticated:
+            serializer = PostSerializer(post, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail':'authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
     elif request.method == 'DELETE':
-        post.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.user and request.user.is_authenticated:
+            post.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'detail':'authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
 def comment_list_post(request):
 
     """ API endpoint for listing all commments and posting """
@@ -73,23 +80,24 @@ def comment_list_post(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(commented_by=request.user)
+        if request.user and request.user.is_authenticated:
+            serializer = CommentSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(commented_by=request.user)
              
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
- 
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail':'authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
 def comment_detail(request, pk):
 
     """ API endpoint for retrieve, patch and delete users' comments"""
 
     try:
         comment = Comment.objects.get(pk=pk)
-    except comment.DoesNotExist:
+    except Comment.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
@@ -97,19 +105,24 @@ def comment_detail(request, pk):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = CommentSerializer(comment, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if request.user and request.user.is_authenticated:
+            serializer = CommentSerializer(comment, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail':'authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
     elif request.method == 'DELETE':
-        comment.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.user and requuest.user.is_authenticated:
+            comment.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'detail':'authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
 def like_list_post(request):
 
     """API endpoint for GET and POST request for likes"""
@@ -120,16 +133,18 @@ def like_list_post(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = PostLikeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(liked_by=request.user)
-             
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if request.user and request.user.is_authenticated:
+            serializer = PostLikeSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(liked_by=request.user)
+                
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail':'authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([IsAuthenticated])
 def like_detail(request, pk):
 
     """ API endpoint for retrieve, update and delete""" 
@@ -137,7 +152,7 @@ def like_detail(request, pk):
 
     try:
         post_like = PostLike.objects.get(pk=pk)
-    except post_like.DoesNotExist:
+    except PostLike.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
@@ -145,8 +160,11 @@ def like_detail(request, pk):
         return Response(serializer.data)
 
     elif request.method == 'DELETE':
-        post_like.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.user and request.user.is_authenticated:
+            post_like.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'detail':'authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 @api_view(['POST'])

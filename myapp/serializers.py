@@ -91,7 +91,7 @@ class PostSerializer(serializers.Serializer):
     comments = CommentListSerializer(read_only=True, source='comment', many=True)
 
     def create(self, validated_data): 
-        print(validated_data)
+      
         if  not (validated_data.get('text') or validated_data.get('image')):
             raise serializers.ValidationError('Post is empty')
         else:
