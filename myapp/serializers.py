@@ -81,8 +81,7 @@ class PostLikeListSerializer(serializers.Serializer):
  
 
 class PostSerializer(serializers.Serializer):
-     
-        
+      
     id = serializers.ReadOnlyField()
     posted_by= UserSerializer(read_only=True)
     text = serializers.CharField(required=False)  
@@ -93,7 +92,7 @@ class PostSerializer(serializers.Serializer):
 
     def create(self, validated_data): 
         print(validated_data)
-        if  not (validated_data.get('text') and validated_data.get('image')):
+        if  not (validated_data.get('text') or validated_data.get('image')):
             raise serializers.ValidationError('Post is empty')
         else:
             return Post.objects.create(**validated_data)
