@@ -7,7 +7,9 @@ from rest_framework.test import APIClient
 from .models import *
 from .serializers import *
 from django.core.files.images import ImageFile
-import json
+from PIL import Image
+import tempfile
+
 
  
 class TestPost(TestCase):
@@ -26,8 +28,11 @@ class TestPost(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
  
-    def test_post(self):         
-        with open('/home/sanjeev1/Desktop/test1.jpg', 'rb') as image:
+    def test_post(self):   
+        image = Image.new('RGB', (100, 100))
+        tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
+        image.save(tmp_file)      
+        with open(tmp_file.name, 'rb') as image:
             
             response = self.client.post(reverse('post_list'), data= { 'text':'sanjev','image': image}, format='multipart')
               
@@ -41,14 +46,16 @@ class TestPost(TestCase):
 
 
     def test_put(self):
-         
-        with open('/home/sanjeev1/Desktop/test1.jpg', 'rb') as image:
+        image = Image.new('RGB', (101, 101))
+        tmp_file = tempfile.NamedTemporaryFile(suffix='.jpg')
+        image.save(tmp_file) 
+           
+        with open(tmp_file.name, 'rb') as image:
             response = self.client.put(
                 reverse('post_detail',  kwargs={'pk': self.post.pk}),
                 data= { 'text':'sanjev','image': image},  
                 format='multipart'        
             )
-
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_delete(self):
