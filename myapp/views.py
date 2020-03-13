@@ -73,7 +73,7 @@ class CommentList(APIView):
 
 
     def get(self, request):
-        comments = COment.objects.all()
+        comments = Comment.objects.all()
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
   

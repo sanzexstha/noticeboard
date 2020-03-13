@@ -7,7 +7,7 @@ urlpatterns = [
     path('likes/<int:pk>', LikeDetail.as_view(), name='like_detail'),
     path('posts/', PostList.as_view() , name='post_list'),   
     path('posts/<int:pk>', PostDetail.as_view(), name='post_detail'),
-    path('comments/', CommentDetail.as_view(), name='comment_list'),
+    path('comments/', CommentList.as_view(), name='comment_list'),
     path('comments/<int:pk>', CommentDetail.as_view() ,name='comment_detail'),
     path('user/create',UserCreate.as_view()),
 ]

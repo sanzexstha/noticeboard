@@ -71,7 +71,7 @@ class PostSerializer(serializers.Serializer):
     image=serializers.ImageField(required=False)
     posted_date = serializers.DateTimeField(read_only=True)
     post_likes = PostLikeListSerializer(many=True, read_only=True)
-    comments = CommentListSerializer(read_only=True, source='comment', many=True)
+    comments = CommentListSerializer(read_only=True,source='post_comments', many=True)
 
     def create(self, validated_data): 
 
