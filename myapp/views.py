@@ -7,7 +7,9 @@ from django.core.exceptions import PermissionDenied
 from rest_framework import exceptions
 from .permissions import *
 from .serializers import (PostSerializer, UserSerializer, CommentSerializer, 
-                        CommentListSerializer, PostLikeSerializer, )
+                        CommentListSerializer, PostLikeSerializer, 
+                        PostListSerializer
+                        )
 from rest_framework.views import APIView
 from rest_framework import status
 from django.http import Http404
@@ -21,7 +23,7 @@ class PostList(APIView):
 
     def get(self, request):
         posts = Post.objects.all()
-        serializer = PostSerializer(posts, many=True)
+        serializer = PostListSerializer(posts, many=True)
         return Response(serializer.data)
   
     def post(self, request):
@@ -46,7 +48,7 @@ class PostDetail(APIView):
     
     def get(self, request, pk):
         post = self.get_object(pk)
-        serializer = PostSerializer(post)
+        serializer = PostListSerializer(post)
         return Response(serializer.data)
 
     def put(self, request, pk):

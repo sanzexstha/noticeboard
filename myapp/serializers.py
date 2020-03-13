@@ -1,7 +1,11 @@
 from .models import *
 from rest_framework import serializers
 from django.contrib.auth.validators import UnicodeUsernameValidator
- 
+
+class DummyObject:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
 class UserSerializer(serializers.Serializer):
 
    
@@ -63,28 +67,67 @@ class PostLikeSerializer(serializers.Serializer):
 class PostLikeListSerializer(serializers.Serializer):
     liked_by = UserSerializer(read_only=True)
  
+
+
 class PostSerializer(serializers.Serializer):
+    text = serializers.CharField(required=False)  
+    image = serializers.ListField(
+                    child=serializers.ImageField( max_length=100000,
+                    allow_empty_file=False,
+                    use_url=False ) 
+                    )
+
+    def create(self, validated_data):
+
+        if not (validated_data.get('text') or validated_data.get('image')):
+            raise serializers.ValidationError('Post is empty')
+        else:
+            img_data=validated_data.pop('image')
+            post=Post.objects.create(**validated_data)
+            for img in img_data:
+                PostImage.objects.create(post=post,image=img)
+            validated_data={**validated_data, **({'image': img_data})}
+            return DummyObject(**validated_data)
+
+
+    def update(self, instance, validated_data):
+        print(instance)
+        # instance.text = validated_data.get('text', instance.text)
+        # post_image=instance.post_images
+        # instance.image = validated_data.get('image', instance.image)
+        return instance
+
+
+class PostImageSerializer(serializers.Serializer):
+    id = serializers.ReadOnlyField()
+    image=serializers.ImageField()
+
+
+    def create(self, validated_data):
+        raise NotImplementedError
+
+    def update(self, validated_data):
+        raise NotImplementedError
+
+
+    
+     
+
+class PostListSerializer(serializers.Serializer):
       
     id = serializers.ReadOnlyField()
     posted_by= UserSerializer(read_only=True)
     text = serializers.CharField(required=False)  
-    image=serializers.ImageField(required=False)
+    post_images = PostImageSerializer(many=True, read_only=True)
     posted_date = serializers.DateTimeField(read_only=True)
     post_likes = PostLikeListSerializer(many=True, read_only=True)
     comments = CommentListSerializer(read_only=True,source='post_comments', many=True)
-
-    def create(self, validated_data): 
-
-        if  not (validated_data.get('text') or validated_data.get('image')):
-            raise serializers.ValidationError('Post is empty')
-        else:
-            return Post.objects.create(**validated_data)
             
-     
-    def update(self, instance, validated_data):
-  
-        instance.text = validated_data.get('text', instance.text)
-        instance.image = validated_data.get('image', instance.image)
-        return instance
+    def create(self, validated_data):
+        raise NotImplementedError
+
+    def update(self, validated_data):
+        raise NotImplementedError
+
 
  
