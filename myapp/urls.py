@@ -3,8 +3,8 @@ from .views import *
  
 urlpatterns = [
  
-    # path('likes/', like_list.as_view() , name='like_list'), 
-    # path('likes/<int:pk>', like_detail.as_view(), name='like_detail'),
+    path('likes/', LikeList.as_view() , name='like_list'), 
+    path('likes/<int:pk>', LikeDetail.as_view(), name='like_detail'),
     path('posts/', PostList.as_view() , name='post_list'),   
     path('posts/<int:pk>', PostDetail.as_view(), name='post_detail'),
     path('comments/', CommentDetail.as_view(), name='comment_list'),

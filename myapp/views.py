@@ -114,7 +114,45 @@ class CommentDetail(APIView):
         comment = self.get_object(pk)
         comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-        
+
+class LikeList(APIView):
+    """
+    List all likes ,create a new like.
+    """
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+    def get(self, request):
+        likes = PostLike.objects.all()
+        serializer = PostLikeSerializer(likes, many=True)
+        return Response(serializer.data)
+  
+    def post(self, request):
+        serializer = PostLikeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(commented_by=self.request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)       
+
+class LikeDetail(APIView):
+    """
+    delete a like
+    """
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_object(self, pk):
+        try:
+            return PostLike.objects.get(pk=pk)
+        except PostLike.DoesNotExist:
+            raise HTTP404
+    
+
+    def delete(self, request, pk):
+        post = self.get_object(pk)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class UserCreate(APIView):
 
     def post(self, request):
