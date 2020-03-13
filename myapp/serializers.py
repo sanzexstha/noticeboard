@@ -54,7 +54,6 @@ class PostLikeSerializer(serializers.Serializer):
     id = serializers.ReadOnlyField()
     liked_by = UserSerializer(read_only=True)
     post = serializers.PrimaryKeyRelatedField(queryset=Post.objects.all())
- 
 
     def create(self, validated_data):
         return PostLike.objects.create(**validated_data)
@@ -63,13 +62,7 @@ class PostLikeSerializer(serializers.Serializer):
 
 class PostLikeListSerializer(serializers.Serializer):
     liked_by = UserSerializer(read_only=True)
-
  
-    
-    
-   
- 
-
 class PostSerializer(serializers.Serializer):
       
     id = serializers.ReadOnlyField()
@@ -81,7 +74,7 @@ class PostSerializer(serializers.Serializer):
     comments = CommentListSerializer(read_only=True, source='comment', many=True)
 
     def create(self, validated_data): 
-      
+
         if  not (validated_data.get('text') or validated_data.get('image')):
             raise serializers.ValidationError('Post is empty')
         else:
