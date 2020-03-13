@@ -97,7 +97,7 @@ class CommentDetail(APIView):
     
     def get(self, request, pk):
         comment = self.get_object(pk)
-        serializer = CommentSerializer(post)
+        serializer = CommentSerializer(comment)
         return Response(serializer.data)
 
     def put(self, request, pk):
@@ -130,7 +130,7 @@ class LikeList(APIView):
     def post(self, request):
         serializer = PostLikeSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(commented_by=self.request.user)
+            serializer.save(liked_by=self.request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)       
 
