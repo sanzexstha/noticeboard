@@ -148,8 +148,8 @@ class LikeDetail(APIView):
     
 
     def delete(self, request, pk):
-        post = self.get_object(pk)
-        post.delete()
+        like = self.get_object(pk)
+        like.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
