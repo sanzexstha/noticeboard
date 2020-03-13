@@ -8,164 +8,231 @@ from rest_framework import exceptions
 from .permissions import *
 from .serializers import (PostSerializer, UserSerializer, CommentSerializer, 
                         CommentListSerializer, PostLikeSerializer, 
-                        PostListSerializer
+                        PostListSerializer, PostLikeListSerializer
                         )
 from rest_framework.views import APIView
 from rest_framework import status
 from django.http import Http404
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
 
 
-class PostList(APIView):
-    """
-    List all posts ,create a new posts.
-    """
-    permission_classes = [IsAuthenticatedOrReadOnly]
+class PostList(ListCreateAPIView):
+    queryset= Post.objects.all()
+    serializer_class=PostListSerializer
 
-    def get(self, request):
-        posts = Post.objects.all()
-        serializer = PostListSerializer(posts, many=True)
-        return Response(serializer.data)
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return PostSerializer
+        return super().get_serializer_class()  
+
+
+class PostDetail(RetrieveUpdateDestroyAPIView):
+
+    queryset= Post.objects.all()
+
+    serializer_class=PostListSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == :
+            return PostSerializer
+        return super().get_serializer_class()
+
+class CommentList(ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentListSerializer
+    
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CommentSerializer
+        return super().get_serializer_class()  
+    
+class CommentDetail(RetrieveUpdateDestroyAPIView):
+
+    serializer_class = CommentListSerializer
+
+    def get_serializer_class(self):
+        if self.action in ['put']:
+            return CommentSerializer
+        return super().get_serializer_class()
+
+
+class LikeList(ListCreateAPIView):
+
+    queryset = PostLike.objects.all()
+    serializer_class = PostLikeListSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return PostLikeSerializer
+        return super().get_serializer_class()  
+
+class LikeDetail(RetrieveUpdateDestroyAPIView):
+
+    serializer_class = PostLikeListSerializer
+
+    def get_serializer_class(self):
+        if self.action in ['put']:
+            return PostLikeSerializer
+        return super().get_serializer_class()
+
+
+class UserCreate(CreateAPIView):
+    
+    serializer_class = UserSerializer
+
+    
+
+# class PostList(APIView):
+#     """
+#     List all posts ,create a new posts.
+#     """
+#     permission_classes = [IsAuthenticatedOrReadOnly]
+
+#     def get(self, request):
+#         posts = Post.objects.all()
+#         serializer = PostListSerializer(posts, many=True)
+#         return Response(serializer.data)
   
-    def post(self, request):
-        serializer = PostSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(posted_by=self.request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def post(self, request):
+#         serializer = PostSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save(posted_by=self.request.user)
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
          
 
-class PostDetail(APIView):
-    """
-    Retrieve, delete, put posts
-    """
-    permission_classes = [IsAuthenticatedOrReadOnly]
+# class PostDetail(APIView):
+#     """
+#     Retrieve, delete, put posts
+#     """
+#     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get_object(self, pk):
-        try:
-            return Post.objects.get(pk=pk)
-        except Post.DoesNotExist:
-            raise HTTP404
+#     def get_object(self, pk):
+#         try:
+#             return Post.objects.get(pk=pk)
+#         except Post.DoesNotExist:
+#             raise HTTP404
     
-    def get(self, request, pk):
-        post = self.get_object(pk)
-        serializer = PostListSerializer(post)
-        return Response(serializer.data)
+#     def get(self, request, pk):
+#         post = self.get_object(pk)
+#         serializer = PostListSerializer(post)
+#         return Response(serializer.data)
 
-    def put(self, request, pk):
+#     def put(self, request, pk):
 
-        post = self.get_object(pk) 
-        serializer = PostSerializer(post, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         post = self.get_object(pk) 
+#         serializer = PostSerializer(post, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-    def delete(self, request, pk):
-        post = self.get_object(pk)
-        post.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def delete(self, request, pk):
+#         post = self.get_object(pk)
+#         post.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class CommentList(APIView):
-    """
-    List all comments ,create a new comment.
-    """
-    permission_classes = [IsAuthenticatedOrReadOnly]
+# class CommentList(APIView):
+#     """
+#     List all comments ,create a new comment.
+#     """
+#     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
-    def get(self, request):
-        comments = Comment.objects.all()
-        serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data)
+#     def get(self, request):
+#         comments = Comment.objects.all()
+#         serializer = CommentSerializer(comments, many=True)
+#         return Response(serializer.data)
   
-    def post(self, request):
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(commented_by=self.request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def post(self, request):
+#         serializer = CommentSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save(commented_by=self.request.user)
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
          
 
-class CommentDetail(APIView):
-    """
-    Retrieve, delete, put comments
-    """
-    def get_object(self, pk):
-        try:
-            return Comment.objects.get(pk=pk)
-        except Comment.DoesNotExist:
-            raise HTTP404
+# class CommentDetail(APIView):
+#     """
+#     Retrieve, delete, put comments
+#     """
+#     def get_object(self, pk):
+#         try:
+#             return Comment.objects.get(pk=pk)
+#         except Comment.DoesNotExist:
+#             raise HTTP404
     
-    def get(self, request, pk):
-        comment = self.get_object(pk)
-        serializer = CommentSerializer(comment)
-        return Response(serializer.data)
+#     def get(self, request, pk):
+#         comment = self.get_object(pk)
+#         serializer = CommentSerializer(comment)
+#         return Response(serializer.data)
 
-    def put(self, request, pk):
-        post = self.get_object(pk)
-        serializer = CommentSerializer(comment, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def put(self, request, pk):
+#         post = self.get_object(pk)
+#         serializer = CommentSerializer(comment, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-    def delete(self, request, pk):
+#     def delete(self, request, pk):
 
-        comment = self.get_object(pk)
-        comment.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#         comment = self.get_object(pk)
+#         comment.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class LikeList(APIView):
-    """
-    List all likes ,create a new like.
-    """
-    permission_classes = [IsAuthenticatedOrReadOnly]
+# class LikeList(APIView):
+#     """
+#     List all likes ,create a new like.
+#     """
+#     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
-    def get(self, request):
-        likes = PostLike.objects.all()
-        serializer = PostLikeSerializer(likes, many=True)
-        return Response(serializer.data)
+#     def get(self, request):
+#         likes = PostLike.objects.all()
+#         serializer = PostLikeSerializer(likes, many=True)
+#         return Response(serializer.data)
   
-    def post(self, request):
-        serializer = PostLikeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(liked_by=self.request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)       
+#     def post(self, request):
+#         serializer = PostLikeSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save(liked_by=self.request.user)
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)       
 
-class LikeDetail(APIView):
-    """
-    delete a like
-    """
-    permission_classes = [IsAuthenticatedOrReadOnly]
+# class LikeDetail(APIView):
+#     """
+#     delete a like
+#     """
+#     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get_object(self, pk):
-        try:
-            return PostLike.objects.get(pk=pk)
-        except PostLike.DoesNotExist:
-            raise HTTP404
+#     def get_object(self, pk):
+#         try:
+#             return PostLike.objects.get(pk=pk)
+#         except PostLike.DoesNotExist:
+#             raise HTTP404
     
 
-    def delete(self, request, pk):
-        like = self.get_object(pk)
-        like.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def delete(self, request, pk):
+#         like = self.get_object(pk)
+#         like.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class UserCreate(APIView):
+# class UserCreate(APIView):
 
-    def post(self, request):
+#     def post(self, request):
 
-        """ API endpoint for creating/posting new user"""
+#         """ API endpoint for creating/posting new user"""
 
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         serializer = UserSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # @api_view(['GET', 'POST'])

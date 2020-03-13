@@ -1,17 +1,15 @@
 from .models import *
 from rest_framework import serializers
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from .utils import DummyObject
 
-class DummyObject:
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
 
 class UserSerializer(serializers.Serializer):
 
    
     id = serializers.ReadOnlyField()
     username= serializers.CharField(max_length=100, validators=[
-        UnicodeUsernameValidator() ])
+                    UnicodeUsernameValidator() ])
     password= serializers.CharField(max_length=100, write_only=True)
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100)
@@ -62,8 +60,6 @@ class PostLikeSerializer(serializers.Serializer):
     def create(self, validated_data):
         return PostLike.objects.create(**validated_data)
  
-
-
 class PostLikeListSerializer(serializers.Serializer):
     liked_by = UserSerializer(read_only=True)
  
@@ -72,10 +68,8 @@ class PostLikeListSerializer(serializers.Serializer):
 class PostSerializer(serializers.Serializer):
     text = serializers.CharField(required=False)  
     image = serializers.ListField(
-                    child=serializers.ImageField( max_length=100000,
-                    allow_empty_file=False,
-                    use_url=False ) 
-                    )
+                    child=serializers.ImageField() 
+                )
 
     def create(self, validated_data):
 
@@ -90,12 +84,14 @@ class PostSerializer(serializers.Serializer):
             return DummyObject(**validated_data)
 
 
-    def update(self, instance, validated_data):
-        print(instance)
-        # instance.text = validated_data.get('text', instance.text)
-        # post_image=instance.post_images
-        # instance.image = validated_data.get('image', instance.image)
-        return instance
+    # def update(self, instance, validated_data):
+    #     print(instance.id)
+    #     print(instance.post_images.all())
+    #     # instance.text = validated_data.get('text', instance.text)
+    #     # post_image=instance.post_images
+    #     # instance.image = validated_data.get('image', instance.image)
+    #     return instance
+
 
 
 class PostImageSerializer(serializers.Serializer):
@@ -108,10 +104,6 @@ class PostImageSerializer(serializers.Serializer):
 
     def update(self, validated_data):
         raise NotImplementedError
-
-
-    
-     
 
 class PostListSerializer(serializers.Serializer):
       
