@@ -14,71 +14,122 @@ from rest_framework.views import APIView
 from rest_framework import status
 from django.http import Http404
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
+from rest_framework.viewsets import ModelViewSet
 
+class PostViewSet(ModelViewSet):
 
-class PostList(ListCreateAPIView):
     queryset= Post.objects.all()
     serializer_class=PostListSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return PostSerializer
         return super().get_serializer_class()  
 
+    def perform_create(self, serializer):
+        serializer.save(posted_by=self.request.user) 
 
-class PostDetail(RetrieveUpdateDestroyAPIView):
 
-    queryset= Post.objects.all()
+class CommentViewSet(ModelViewSet):
 
-    serializer_class=PostListSerializer
+    queryset= Comment.objects.all()
+    serializer_class=CommentListSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get_serializer_class(self):
-        if self.request.method == :
-            return PostSerializer
-        return super().get_serializer_class()
-
-class CommentList(ListCreateAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentListSerializer
-    
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return CommentSerializer
         return super().get_serializer_class()  
-    
-class CommentDetail(RetrieveUpdateDestroyAPIView):
 
-    serializer_class = CommentListSerializer
-
-    def get_serializer_class(self):
-        if self.action in ['put']:
-            return CommentSerializer
-        return super().get_serializer_class()
+    def perform_create(self, serializer):
+        serializer.save(commented_by=self.request.user) 
 
 
-class LikeList(ListCreateAPIView):
-
-    queryset = PostLike.objects.all()
-    serializer_class = PostLikeListSerializer
+class LikeViewSet(ModelViewSet):
+    queryset= PostLike.objects.all()
+    serializer_class=PostLikeListSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return PostLikeSerializer
         return super().get_serializer_class()  
 
-class LikeDetail(RetrieveUpdateDestroyAPIView):
+    def perform_create(self, serializer):
+        serializer.save(liked_by=self.request.user) 
 
-    serializer_class = PostLikeListSerializer
+# class PostList(ListCreateAPIView):
 
-    def get_serializer_class(self):
-        if self.action in ['put']:
-            return PostLikeSerializer
-        return super().get_serializer_class()
+#     queryset= Post.objects.all()
+#     serializer_class=PostListSerializer
+#     permission_classes = [IsAuthenticatedOrReadOnly]
+
+#     def get_serializer_class(self):
+#         if self.request.method == 'POST':
+#             return PostSerializer
+#         return super().get_serializer_class()  
+
+#     def perform_create(self, serializer):
+#         serializer.save(posted_by=self.request.user) 
 
 
-class UserCreate(CreateAPIView):
+# class PostDetail(RetrieveUpdateDestroyAPIView):
+
+#     queryset= Post.objects.all()
+#     serializer_class=PostListSerializer
+#     permission_classes = [IsAuthenticatedOrReadOnly]
+
+#     def get_serializer_class(self):
+#         if self.request.method == 'GET':
+#             return PostSerializer
+#         return super().get_serializer_class()
+
+# class CommentList(ListCreateAPIView):
+#     queryset = Comment.objects.all()
+#     serializer_class = CommentListSerializer
+#     permission_classes = [IsAuthenticatedOrReadOnly]
     
-    serializer_class = UserSerializer
+#     def get_serializer_class(self):
+#         if self.request.method == 'POST':
+#             return CommentSerializer
+#         return super().get_serializer_class() 
+
+#     def perform_create(self, serializer):
+#         serializer.save(commented_by=self.request.user) 
+
+
+# class CommentDetail(RetrieveUpdateDestroyAPIView):
+#     queryset = Comment.objects.all() 
+#     serializer_class = CommentSerializer
+#     permission_classes = [IsAuthenticatedOrReadOnly]
+
+  
+# class LikeList(ListCreateAPIView):
+
+#     queryset = PostLike.objects.all()
+#     serializer_class = PostLikeListSerializer
+#     permission_classes = [IsAuthenticatedOrReadOnly]
+
+#     def get_serializer_class(self):
+#         if self.request.method == 'POST':
+#             return PostLikeSerializer
+#         return super().get_serializer_class()  
+
+
+#     def perform_create(self, serializer):
+#         serializer.save(liked_by=self.request.user) 
+
+# class LikeDetail(RetrieveUpdateDestroyAPIView):
+    
+#     queryset = PostLike.objects.all()   
+#     serializer_class = PostLikeListSerializer
+#     permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+# class UserCreate(CreateAPIView):
+    
+#     serializer_class = UserSerializer
 
     
 

@@ -1,20 +1,30 @@
 from django.urls import path, include
 from .views import *
+from rest_framework.routers import DefaultRouter
  
+
+
+router = DefaultRouter()
+router.register(r'posts', PostViewSet)
+router.register(r'likes', LikeViewSet)
+router.register(r'comments', CommentViewSet)
+
 urlpatterns = [
- 
-    path('likes/', LikeList.as_view() , name='like_list'), 
-    path('likes/<int:pk>', LikeDetail.as_view(), name='like_detail'),
-    path('posts/', PostList.as_view() , name='post_list'),   
-    path('posts/<int:pk>', PostDetail.as_view(), name='post_detail'),
-    path('comments/', CommentList.as_view(), name='comment_list'),
-    path('comments/<int:pk>', CommentDetail.as_view() ,name='comment_detail'),
-    path('user/create',UserCreate.as_view()),
+    path('', include(router.urls)),
 ]
 
 
 
-
+# urlpatterns = [
+ 
+#     path('likes/', LikeList.as_view() , name='like_list'), 
+#     path('likes/<int:pk>', LikeDetail.as_view(), name='like_detail'),
+#     path('posts/', PostList.as_view() , name='post_list'),   
+#     path('posts/<int:pk>', PostDetail.as_view(), name='post_detail'),
+#     path('comments/', CommentList.as_view(), name='comment_list'),
+#     path('comments/<int:pk>', CommentDetail.as_view() ,name='comment_detail'),
+#     path('user/create',UserCreate.as_view()),
+# ]
 
 # urlpatterns = [
  

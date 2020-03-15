@@ -38,7 +38,9 @@ class CommentSerializer(serializers.Serializer):
         return Comment.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
+        print(instance)
         instance.comment=validated_data.get('comment', instance.comment)
+        instance.save()
         return instance
 
 class CommentListSerializer(serializers.Serializer):
@@ -69,19 +71,22 @@ class PostSerializer(serializers.Serializer):
     text = serializers.CharField(required=False)  
     image = serializers.ListField(
                     child=serializers.ImageField() 
-                )
+                ,required=False)
 
     def create(self, validated_data):
 
         if not (validated_data.get('text') or validated_data.get('image')):
             raise serializers.ValidationError('Post is empty')
         else:
-            img_data=validated_data.pop('image')
-            post=Post.objects.create(**validated_data)
-            for img in img_data:
-                PostImage.objects.create(post=post,image=img)
-            validated_data={**validated_data, **({'image': img_data})}
-            return DummyObject(**validated_data)
+            if validated_data.get('image'):
+                img_data=validated_data.pop('image')
+                post=Post.objects.create(**validated_data)
+                for img in img_data:
+                    PostImage.objects.create(post=post,image=img)
+                validated_data={**validated_data, **({'image': img_data})}
+                return DummyObject(**validated_data)
+            else:
+                return Post.objects.create(**validated_data)
 
 
     # def update(self, instance, validated_data):
